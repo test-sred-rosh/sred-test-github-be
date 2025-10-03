@@ -5,14 +5,26 @@ import { GithubIntegration } from "../models/githubIntegration.model.js";
 
 const router = express.Router();
 
-router.get("/test", (req, res) => {
-  res.send("Hello kido");
-});
 
 const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 const CALLBACK_URL = process.env.GITHUB_CALLBACK_URL;
+
+router.get("/me", (req, res) => {
+	console.log("COOKIES", req.cookies);
+  const token = req.cookies.APP_JWT;
+  if (!token) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.APP_JWT_SECRET);
+    return res.json({ user: decoded });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+});
 
 router.get("/github/login", (req, res) => {
   const redirectUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${CALLBACK_URL}&scope=repo,read:org,user`;

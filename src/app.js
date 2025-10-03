@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 
 import authRouter from "./routes/auth.routes.js"
 import githubRouter from "./routes/github.routes.js"
+import cookieParser from 'cookie-parser';
 
 
 const app = express();
@@ -21,6 +22,7 @@ mongoose.connect(MONGO_URI, {
 
 app.use(cors({ origin: "http://localhost:4200", credentials: true }));
 app.use(express.json())
+app.use(cookieParser());
 
 app.use('/auth', authRouter);
 app.use('/github', githubRouter)
